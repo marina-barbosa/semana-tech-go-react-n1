@@ -1,9 +1,24 @@
 import { useParams } from "react-router-dom"
 import amaLogo from '../assets/ama-logo.svg'
 import { Share2 } from "lucide-react"
+import { toast } from "sonner"
+import { Messages } from "../components/messages"
+import { Suspense } from "react"
 
 export const Room = () => {
   const { roomId } = useParams()
+
+  function handleShareRoom() {
+    const url = window.location.href.toString()
+
+    if (navigator.share !== undefined && navigator.canShare()) {
+      navigator.share({ url })
+    } else {
+      navigator.clipboard.writeText(url)
+
+      toast.info('O link da sala foi copiado para área de transferência!')
+    }
+  }
 
   return (
     <div className="mx-auto max-w-[640px] flex flex-col gap-6 py-10 px-4">
@@ -16,6 +31,7 @@ export const Room = () => {
 
         <button
           type="submit"
+          onClick={handleShareRoom}
           className="ml-auto bg-zinc-800 text-zinc-300 px-3 py-1.5 gap-1.5 flex items-center rounded-lg font-medium text-sm transition-colors hover:bg-zinc-700"
         >
           Compartilhar
@@ -24,6 +40,10 @@ export const Room = () => {
 
       </div>
       <div className="h-px w-full bg-zinc-900" />
+
+      <Suspense fallback={<p>Carregando...</p>}>
+        <Messages />
+      </Suspense>
     </div>
   )
 }
